@@ -1,0 +1,30 @@
+{
+  "name": "aa-veebiproge",
+  "version": "1.0.0",
+  "description": "veebiprogrammeerimise kursuse tunnitöö",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://karlmnna@github.com/karlmnna/AA-veebiproge.git"
+  },
+  "keywords": [
+    "javascript",
+    "veebiprogrammeerimine",
+    "õppetöö",
+    "TLÜ",
+    "DTI"
+  ],
+  "author": "Karl Marcus Männa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karlmnna/AA-veebiproge/issues"
+  },
+  "homepage": "https://github.com/karlmnna/AA-veebiproge#readme",
+  "dependencies": {
+    "ejs": "^6.0.1",
+    "express": "^5.2.1"
+  }
+}
