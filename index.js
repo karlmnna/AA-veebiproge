@@ -123,25 +123,62 @@ app.get('/eestifilm/film_inimesed', async (req, res)=>{
 	}
 });
 
+
 app.get('/eestifilm/lisa_film_inimesed', (req, res)=>{
-	res.render('lisa_film_inimesed', {notice: 'Ootan andmeid'});
+    res.render('lisa_film_inimesed', {
+        notice: 'Ootan andmeid',
+        firstNameInput: null,
+        lastNameInput: null,
+        bornInput: null,
+        deceasedInput: null
+    });
 });
+
 
 app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
 	console.log(req.body);
+	const formData = {
+    firstNameInput: req.body.firstNameInput,
+    lastNameInput: req.body.lastNameInput,
+    bornInput: req.body.bornInput,
+    deceasedInput: req.body.deceasedInput
+	};
+
 	//kontrollime andmeid, teeme kõige lahjema kontrolli
-	let deceasedDate = null;
-	if(req.body.deceasedInput != ''){
-		deceasedDate = req.body.deceasedInput;
-	}
 	
-	//sünnikuupäeva võrdlemine
 	const bornDate = new Date(req.body.bornInput);
 	const timeNow = new Date();
+
+	let deceasedDate = null;
+	let deceasedDateValid = true;
+
+	if(req.body.deceasedInput != ''){
+    	deceasedDate = req.body.deceasedInput;
+    	const deceasedDateObj = new Date(deceasedDate);
+
+    	if(isNaN(deceasedDateObj.getTime()) ||
+       	deceasedDateObj.toISOString().slice(0, 10) != deceasedDate ||
+    	deceasedDateObj > timeNow ||
+       	deceasedDateObj < bornDate){
+        deceasedDateValid = false;
+    	}
+	}
+
 	
-	if(!req.body.firstNameInput || !req.body.lastNameInput || !req.body.bornInput || isNaN(bornDate.getTime()) || bornDate > timeNow){
+	
+	if(!req.body.firstNameInput ||
+		!req.body.lastNameInput ||
+		!req.body.bornInput ||
+		isNaN(bornDate.getTime()) ||
+		bornDate.toISOString().slice(0, 10) != req.body.bornInput ||
+		bornDate > timeNow ||
+		!deceasedDateValid){
 		console.log("Andmed pole korrektsed!");
-		return res.render('lisa_film_inimesed', {notice: 'Sisestatud andmed pole korrektsed!'});
+		return res.render('lisa_film_inimesed', {
+	notice: 'Sisestatud andmed pole korrektsed!',
+	...formData
+});
+
 	}
 	let conn;
 	try {
@@ -158,11 +195,22 @@ app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
 			req.body.bornInput,
 			deceasedDate
 		]);
-		res.render('lisa_film_inimesed', {notice: req.body.firstNameInput + ' ' + req.body.lastNameInput + ' andmebaasi salvestatud'});
+		res.render('lisa_film_inimesed', {
+    	notice: req.body.firstNameInput + ' ' + req.body.lastNameInput + ' andmebaasi salvestatud',
+    	firstNameInput: null,
+    	lastNameInput: null,
+    	bornInput: null,
+    	deceasedInput: null
+});
+
 	}
 	catch (err) {
 		console.log('Andmebaasiga suhtlemise viga');
-		res.render('lisa_film_inimesed', {notice: 'Tekkis viga, andmeid ei salvestatud!'});
+		res.render('lisa_film_inimesed', {
+    	notice: 'Tekkis viga, andmeid ei salvestatud!',
+    	...formData
+});
+
 	}
 	finally {
 		if(conn){
@@ -171,4 +219,222 @@ app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
 	}
 	
 });
+
+
+app.get('/eestifilm/lisa_film', (req, res)=>{
+    res.render('lisa_film', {
+        notice: 'Ootan filmi andmeid',
+        titleInput: null,
+        releaseYearInput: null,
+        durationInput: null,
+        descriptionInput: null
+    });
+});
+
+
+app.get('/eestifilm/lisa_amet', (req, res)=>{
+    res.render('lisa_amet', {
+        notice: 'Ootan ameti andmeid',
+        titleInput: null,
+        descriptionInput: null
+    });
+});
+
+
+
+app.get('/eestifilm/filmid', async (req, res)=>{
+    let conn;
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        let sqlReq = 'SELECT * FROM movie ORDER BY title';
+        const [sqlRes] = await conn.execute(sqlReq);
+
+        res.render('filmid', {movieList: sqlRes});
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+        res.render('filmid', {movieList: []});
+    }
+    finally {
+        if(conn){
+            await conn.end();
+        }
+    }
+});
+
+
+app.get('/eestifilm/ametid', async (req, res)=>{
+    let conn;
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        let sqlReq = 'SELECT * FROM profession ORDER BY title';
+        const [sqlRes] = await conn.execute(sqlReq);
+
+        res.render('ametid', {professionList: sqlRes});
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+        res.render('ametid', {professionList: []});
+    }
+    finally {
+        if(conn){
+            await conn.end();
+        }
+    }
+});
+
+
+
+app.post('/eestifilm/lisa_film', async (req, res)=>{
+    console.log(req.body);
+
+    const formData = {
+        titleInput: req.body.titleInput,
+        releaseYearInput: req.body.releaseYearInput,
+        durationInput: req.body.durationInput,
+        descriptionInput: req.body.descriptionInput
+    };
+
+    //kontrollime sisestatud andmeid
+    const title = (req.body.titleInput || '').trim();
+    const releaseYear = Number(req.body.releaseYearInput);
+    const duration = Number(req.body.durationInput);
+    const description = (req.body.descriptionInput || '').trim();
+
+    if(!title ||
+       title.length > 100 ||
+       !Number.isInteger(releaseYear) ||
+       releaseYear < 1 ||
+       releaseYear > 9999 ||
+       !Number.isInteger(duration) ||
+       duration <= 0 ||
+       duration > 10000 ||
+       description.length > 1000){
+
+        console.log('Andmed pole korrektsed!');
+
+        return res.render('lisa_film', {
+            notice: 'Sisestatud andmed pole korrektsed!',
+            ...formData
+        });
+    }
+
+    let conn;
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        let sqlReq = 'INSERT INTO movie (title, release_year, duration_minutes, description) VALUES (?,?,?,?)';
+
+        await conn.execute(sqlReq, [
+            title,
+            releaseYear,
+            duration,
+            description || null
+        ]);
+
+        res.render('lisa_film', {
+            notice: title + ' andmebaasi salvestatud',
+            titleInput: null,
+            releaseYearInput: null,
+            durationInput: null,
+            descriptionInput: null
+        });
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+
+        res.render('lisa_film', {
+            notice: 'Tekkis viga, andmeid ei salvestatud!',
+            ...formData
+        });
+    }
+    finally {
+        if(conn){
+            await conn.end();
+        }
+    }
+});
+
+
+
+app.post('/eestifilm/lisa_amet', async (req, res)=>{
+    console.log(req.body);
+
+    const formData = {
+        titleInput: req.body.titleInput,
+        descriptionInput: req.body.descriptionInput
+    };
+
+    //kontrollime sisestatud andmeid
+    const title = (req.body.titleInput || '').trim();
+    const description = (req.body.descriptionInput || '').trim();
+
+    if(!title ||
+       title.length > 50 ||
+       description.length > 1000){
+
+        console.log('Andmed pole korrektsed!');
+
+        return res.render('lisa_amet', {
+            notice: 'Sisestatud andmed pole korrektsed!',
+            ...formData
+        });
+    }
+
+    let conn;
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        let sqlReq = 'INSERT INTO profession (title, description) VALUES (?,?)';
+
+        await conn.execute(sqlReq, [
+            title,
+            description || null
+        ]);
+
+        res.render('lisa_amet', {
+            notice: title + ' andmebaasi salvestatud',
+            titleInput: null,
+            descriptionInput: null
+        });
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+
+        res.render('lisa_amet', {
+            notice: 'Tekkis viga, andmeid ei salvestatud!',
+            ...formData
+        });
+    }
+    finally {
+        if(conn){
+            await conn.end();
+        }
+    }
+});
+
+
+
 app.listen(5325);

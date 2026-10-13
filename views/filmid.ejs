@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Karl Marcus Männa, veebiprogrammeerimine</title>
+</head>
+<body>
+    <img src="/pic/veebiprogrammeerimine_2026_AA.png" alt="banner">
+    <h1>Eesti film</h1>
+    <p>Siin on Eesti filmide nimekiri.</p>
+
+    <ul>
+        <li><a href="/">Avalehele</a></li>
+        <li><a href="/eestifilm">Eesti filmi avalehele</a></li>
+        <li><a href="/eestifilm/lisa_film">Lisa film</a></li>
+    </ul>
+    <hr>
+
+    <h2>Filmide nimekiri</h2>
+
+    <% if(movieList.length > 0){ %>
+        <ul>
+            <% movieList.forEach(function(movie){ %>
+                <li>
+                    <%= movie.title %> (<%= movie.release_year %>)
+                    - <%= movie.duration_minutes %> min
+                    <% if(movie.description){ %>
+                        - <%= movie.description %>
+                    <% } %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>Filme ei leitud!</p>
+    <% } %>
+
+</body>
+</html>

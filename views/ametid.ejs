@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Karl Marcus Männa, veebiprogrammeerimine</title>
+</head>
+<body>
+    <img src="/pic/veebiprogrammeerimine_2026_AA.png" alt="banner">
+    <h1>Eesti film</h1>
+    <p>Siin on filmiga seotud ametite nimekiri.</p>
+
+    <ul>
+        <li><a href="/">Avalehele</a></li>
+        <li><a href="/eestifilm">Eesti filmi avalehele</a></li>
+        <li><a href="/eestifilm/lisa_amet">Lisa amet</a></li>
+    </ul>
+    <hr>
+
+    <h2>Ametite nimekiri</h2>
+
+    <% if(professionList.length > 0){ %>
+        <ul>
+            <% professionList.forEach(function(profession){ %>
+                <li>
+                    <%= profession.title %>
+                    <% if(profession.description){ %>
+                        - <%= profession.description %>
+                    <% } %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>Ameteid ei leitud!</p>
+    <% } %>
+
+</body>
+</html>
