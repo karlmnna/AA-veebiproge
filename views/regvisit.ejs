@@ -18,5 +18,17 @@
 		<input id="nameSubmit" name="nameSubmit" type="submit" value="Salvesta">
 	</form>
 	<hr>
+	
+	<h2>Viimane registreerumine</h2>
+
+	<% if (name) { %>
+		<p>
+			Viimati registreerus külastajana
+			<%= name %>, kell <%= time %> – <%= date %>
+		</p>
+	<% } else { %>
+		<p>Ühtegi külastajat pole veel registreeritud.</p>
+	<% } %>
+
 </body>
 </html>

@@ -43,11 +43,20 @@ app.get('/miks-tlu', (req, res)=>{
 	res.render('miks-tlu');
 });
 
-app.get('/regvisit', (req, res)=>{
-	res.render('regvisit');
-});
+const visitsRouter = require('./routes/visitsRoutes');
+app.use('/', visitsRouter);
 
-app.post('/regvisit', async (req, res)=>{
+const eestifilmRouter = require('./routes/eestifilmRoutes');
+app.use('/eestifilm', eestifilmRouter);
+
+
+//VANA VIIS KUIDAS MARSRUUDID MEIL OLID getid ja postid, nuud tegime routes neile
+
+/*app.get('/regvisit', (req, res)=>{
+	res.render('regvisit');
+});*/
+
+/*app.post('/regvisit', async (req, res)=>{
 	console.log(req.body);
 
 	const date = dateTimeET.dateET().replace(',', '');
@@ -64,9 +73,9 @@ app.post('/regvisit', async (req, res)=>{
 		console.log(err);
 		res.render('regvisit');
 	}
-});
+});*/
 
-app.get('/lastvisit', async (req, res)=>{
+/*app.get('/lastvisit', async (req, res)=>{
 	try {
 		const data = await fs.readFile(regTextRef, 'utf8');
 
@@ -89,13 +98,14 @@ app.get('/lastvisit', async (req, res)=>{
 	catch (err) {
 		console.log(err);
 	}
-});
+});*/
 
-app.get('/eestifilm', (req, res)=>{
+
+/*app.get('/eestifilm', (req, res)=>{
 	res.render('eestifilm');
-});
+});*/
 
-app.get('/eestifilm/film_inimesed', async (req, res)=>{
+/*app.get('/eestifilm/film_inimesed', async (req, res)=>{
 	let conn;
 	try {
 		conn = await mysql.createConnection({
@@ -121,10 +131,10 @@ app.get('/eestifilm/film_inimesed', async (req, res)=>{
 			await conn.end();
 		}
 	}
-});
+});*/
 
 
-app.get('/eestifilm/lisa_film_inimesed', (req, res)=>{
+/*app.get('/eestifilm/lisa_film_inimesed', (req, res)=>{
     res.render('lisa_film_inimesed', {
         notice: 'Ootan andmeid',
         firstNameInput: null,
@@ -132,10 +142,9 @@ app.get('/eestifilm/lisa_film_inimesed', (req, res)=>{
         bornInput: null,
         deceasedInput: null
     });
-});
+});*/
 
-
-app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
+/*app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
 	console.log(req.body);
 	const formData = {
     firstNameInput: req.body.firstNameInput,
@@ -164,8 +173,6 @@ app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
     	}
 	}
 
-	
-	
 	if(!req.body.firstNameInput ||
 		!req.body.lastNameInput ||
 		!req.body.bornInput ||
@@ -218,10 +225,10 @@ app.post('/eestifilm/lisa_film_inimesed', async (req, res)=>{
 		}
 	}
 	
-});
+});*/
 
 
-app.get('/eestifilm/lisa_film', (req, res)=>{
+/*app.get('/eestifilm/lisa_film', (req, res)=>{
     res.render('lisa_film', {
         notice: 'Ootan filmi andmeid',
         titleInput: null,
@@ -229,20 +236,19 @@ app.get('/eestifilm/lisa_film', (req, res)=>{
         durationInput: null,
         descriptionInput: null
     });
-});
+});*/
 
 
-app.get('/eestifilm/lisa_amet', (req, res)=>{
+/*app.get('/eestifilm/lisa_amet', (req, res)=>{
     res.render('lisa_amet', {
         notice: 'Ootan ameti andmeid',
         titleInput: null,
         descriptionInput: null
     });
-});
+});*/
 
 
-
-app.get('/eestifilm/filmid', async (req, res)=>{
+/*app.get('/eestifilm/filmid', async (req, res)=>{
     let conn;
     try {
         conn = await mysql.createConnection({
@@ -266,10 +272,10 @@ app.get('/eestifilm/filmid', async (req, res)=>{
             await conn.end();
         }
     }
-});
+});*/
 
 
-app.get('/eestifilm/ametid', async (req, res)=>{
+/*app.get('/eestifilm/ametid', async (req, res)=>{
     let conn;
     try {
         conn = await mysql.createConnection({
@@ -293,11 +299,11 @@ app.get('/eestifilm/ametid', async (req, res)=>{
             await conn.end();
         }
     }
-});
+});*/
 
 
 
-app.post('/eestifilm/lisa_film', async (req, res)=>{
+/*app.post('/eestifilm/lisa_film', async (req, res)=>{
     console.log(req.body);
 
     const formData = {
@@ -370,11 +376,10 @@ app.post('/eestifilm/lisa_film', async (req, res)=>{
             await conn.end();
         }
     }
-});
+});*/
 
 
-
-app.post('/eestifilm/lisa_amet', async (req, res)=>{
+/*app.post('/eestifilm/lisa_amet', async (req, res)=>{
     console.log(req.body);
 
     const formData = {
@@ -433,8 +438,6 @@ app.post('/eestifilm/lisa_amet', async (req, res)=>{
             await conn.end();
         }
     }
-});
-
-
+});*/
 
 app.listen(5325);
