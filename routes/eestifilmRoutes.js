@@ -12,7 +12,10 @@ const {
 	eestifilmFilmidLisaPost,
 	eestifilmAmetid,
 	eestifilmAmetidLisa,
-	eestifilmAmetidLisaPost
+	eestifilmAmetidLisaPost,
+	eestifilmSeosLisa,
+	eestifilmSeosLisaPost,
+	eestifilmSeosed
 } = require('../controllers/eestifilmControllers');
 
 router.route('/').get(eestifilm);
@@ -34,6 +37,13 @@ router.route('/ametid').get(eestifilmAmetid);
 router.route('/lisa_amet').get(eestifilmAmetidLisa);
 
 router.route('/lisa_amet').post(eestifilmAmetidLisaPost);
+
+router.route('/lisa_seos').get(eestifilmSeosLisa);
+
+router.route('/lisa_seos').post(eestifilmSeosLisaPost);
+
+router.route('/seosed').get(eestifilmSeosed);
+
 
 
 module.exports = router;

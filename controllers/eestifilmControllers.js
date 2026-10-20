@@ -380,6 +380,242 @@ const eestifilmAmetidLisaPost = async (req, res) => {
 };
 
 
+//Seose lisamise vorm
+//@route GET /eestifilm/lisa_seos
+
+const eestifilmSeosLisa = async (req, res) => {
+    let conn;
+
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        //Loeme inimesed
+        const [personList] = await conn.execute(
+            'SELECT * FROM person ORDER BY last_name'
+        );
+
+        //Loeme filmid
+        const [movieList] = await conn.execute(
+            'SELECT * FROM movie ORDER BY title'
+        );
+
+        //Loeme ametid
+        const [professionList] = await conn.execute(
+            'SELECT * FROM profession ORDER BY title'
+        );
+
+        res.render('lisa_seos', {
+            personList: personList,
+            movieList: movieList,
+            professionList: professionList,
+            notice: 'Vali inimene, film ja amet'
+        });
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+        res.status(500).send('Andmete lugemisel tekkis viga!');
+    }
+    finally {
+        if(conn){
+            await conn.end();
+        }
+    }
+};
+
+
+//Seose salvestamine
+//@route POST /eestifilm/lisa_seos
+
+const eestifilmSeosLisaPost = async (req, res) => {
+
+    const personId = Number(req.body.personInput);
+    const movieId = Number(req.body.movieInput);
+    const professionId = Number(req.body.professionInput);
+    const characterInput = (req.body.characterInput || '').trim();
+
+    let conn;
+    let personList = [];
+    let movieList = [];
+    let professionList = [];
+
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        //Loeme rippmenüüde andmed
+        [personList] = await conn.execute(
+            'SELECT * FROM person ORDER BY last_name'
+        );
+
+        [movieList] = await conn.execute(
+            'SELECT * FROM movie ORDER BY title'
+        );
+
+        [professionList] = await conn.execute(
+            'SELECT * FROM profession ORDER BY title'
+        );
+
+        //Kontrollime, kas valitud andmed on korrektsed
+        const personExists = personList.some(
+            person => person.id === personId
+        );
+
+        const movieExists = movieList.some(
+            movie => movie.id === movieId
+        );
+
+        const profession = professionList.find(
+            profession => profession.id === professionId
+        );
+
+        if (!personExists || !movieExists || !profession) {
+            return res.render('lisa_seos', {
+                personList,
+                movieList,
+                professionList,
+                notice: 'Valitud andmed pole korrektsed!'
+            });
+        }
+
+        //Tegelaskuju nimi ainult näitleja puhul
+        let characterName = null;
+
+        if (profession.title.trim().toLowerCase() === 'näitleja') {
+            characterName = characterInput || null;
+        }
+
+        if (characterName && characterName.length > 100) {
+            return res.render('lisa_seos', {
+                personList,
+                movieList,
+                professionList,
+                notice: 'Tegelaskuju nimi on liiga pikk!'
+            });
+        }
+
+        //Kontrollime, kas täpselt sama seos on juba olemas
+        const sqlCheck = `
+            SELECT id FROM person_in_movie
+            WHERE person_id = ?
+            AND movie_id = ?
+            AND profession_id = ?
+            AND character_name <=> ?
+            LIMIT 1
+        `;
+
+        const [existing] = await conn.execute(sqlCheck, [
+            personId,
+            movieId,
+            professionId,
+            characterName
+        ]);
+
+        if (existing.length > 0) {
+            return res.render('lisa_seos', {
+                personList,
+                movieList,
+                professionList,
+                notice: 'Selline seos on juba olemas!'
+            });
+        }
+
+        //Kui seost pole, salvestame selle
+        const sqlInsert = `
+            INSERT INTO person_in_movie
+            (person_id, movie_id, profession_id, character_name)
+            VALUES (?, ?, ?, ?)
+        `;
+
+        await conn.execute(sqlInsert, [
+            personId,
+            movieId,
+            professionId,
+            characterName
+        ]);
+
+        res.render('lisa_seos', {
+            personList,
+            movieList,
+            professionList,
+            notice: 'Seos edukalt salvestatud!'
+        });
+
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+
+        res.status(500).render('lisa_seos', {
+            personList,
+            movieList,
+            professionList,
+            notice: 'Tekkis viga, seost ei salvestatud!'
+        });
+    }
+    finally {
+        if (conn) {
+            await conn.end();
+        }
+    }
+};
+
+
+
+//Filmide ja inimeste seoste kuvamine
+//@route GET /eestifilm/seosed
+
+const eestifilmSeosed = async (req, res) => {
+    let conn;
+
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        //Loeme seosed koos inimeste, filmide ja ametite nimedega
+        const sqlReq = `
+            SELECT
+                p.first_name,
+                p.last_name,
+                m.title AS movie_title,
+                pr.title AS profession_title,
+                pim.character_name
+            FROM person_in_movie pim
+            JOIN person p ON pim.person_id = p.id
+            JOIN movie m ON pim.movie_id = m.id
+            JOIN profession pr ON pim.profession_id = pr.id
+            ORDER BY m.title, p.last_name
+        `;
+
+        const [sqlRes] = await conn.execute(sqlReq);
+
+        res.render('seosed', {
+            relationList: sqlRes
+        });
+    }
+    catch (err) {
+        console.log('Andmebaasiga suhtlemise viga: ' + err);
+        res.status(500).send('Seoste lugemisel tekkis viga!');
+    }
+    finally {
+        if (conn) {
+            await conn.end();
+        }
+    }
+};
+
+
 module.exports = {
 	eestifilm,
 	eestifilmInimesed,
@@ -390,5 +626,9 @@ module.exports = {
 	eestifilmFilmidLisaPost,
 	eestifilmAmetid,
 	eestifilmAmetidLisa,
-	eestifilmAmetidLisaPost
+	eestifilmAmetidLisaPost,
+    eestifilmSeosLisa,
+    eestifilmSeosLisaPost,
+    eestifilmSeosed
+    
 }

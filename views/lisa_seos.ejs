@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Eesti film - seose lisamine</title>
+</head>
+<body>
+    <img src="/pic/veebiprogrammeerimine_2026_AA.png" alt="banner">
+
+    <h1>Eesti film</h1>
+    <p>Siin saab lisada inimese ja filmi vahelise seose.</p>
+
+    <ul>
+        <li><a href="/">Avalehele</a></li>
+        <li><a href="/eestifilm">Eesti filmi avalehele</a></li>
+    </ul>
+    <hr>
+
+    <h2>Lisa seos</h2>
+
+    <form method="POST" action="/eestifilm/lisa_seos">
+
+        <label for="personInput">Inimene</label>
+        <select id="personInput" name="personInput" required>
+            <option value="" selected disabled>Vali inimene</option>
+            <% personList.forEach(person => { %>
+                <option value="<%= person.id %>">
+                    <%= person.first_name %> <%= person.last_name %>
+                </option>
+            <% }); %>
+        </select>
+        <br>
+
+        <label for="movieInput">Film</label>
+        <select id="movieInput" name="movieInput" required>
+            <option value="" selected disabled>Vali film</option>
+            <% movieList.forEach(movie => { %>
+                <option value="<%= movie.id %>">
+                    <%= movie.title %>
+                </option>
+            <% }); %>
+        </select>
+        <br>
+
+        <label for="professionInput">Amet</label>
+        <select id="professionInput" name="professionInput" required>
+            <option value="" selected disabled>Vali amet</option>
+            <% professionList.forEach(profession => { %>
+                <option value="<%= profession.id %>">
+                    <%= profession.title %>
+                </option>
+            <% }); %>
+        </select>
+        <br>
+
+        <div id="characterField" style="display: none;">
+            <label for="characterInput">Tegelaskuju nimi</label>
+            <input id="characterInput" name="characterInput" type="text" maxlength="100">
+            <br>
+        </div>
+
+        <input type="submit" value="Salvesta">
+    </form>
+
+    <p><%= notice %></p>
+
+    <script>
+        const professionSelect = document.getElementById('professionInput');
+        const characterField = document.getElementById('characterField');
+        const characterInput = document.getElementById('characterInput');
+
+        professionSelect.addEventListener('change', () => {
+            const professionName =
+                professionSelect.options[professionSelect.selectedIndex]
+                    .text.trim().toLowerCase();
+
+            if (professionName === 'näitleja') {
+                characterField.style.display = 'block';
+                characterInput.disabled = false;
+            } else {
+                characterField.style.display = 'none';
+                characterInput.value = '';
+                characterInput.disabled = true;
+            }
+        });
+
+        characterInput.disabled = true;
+    </script>
+</body>
+</html>
