@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 //muudan "public" veebiserveri kättesaadavax
 app.use(express.static('public'));
 //hakkame paringuid parsima
-app.use (bodyparser.urlencoded({extended: false}));
+app.use (bodyparser.urlencoded({extended: true}));
 
 app.get('/', (req, res)=>{
 	//res.send('Express.js veeb käivitus!');
@@ -48,6 +48,11 @@ app.use('/', visitsRouter);
 
 const eestifilmRouter = require('./routes/eestifilmRoutes');
 app.use('/eestifilm', eestifilmRouter);
+
+const galleryPhotoUploadRouter = require('./routes/galleryPhotoUploadRoutes');
+app.use('/galleryphotoupload', galleryPhotoUploadRouter);
+
+
 
 
 //VANA VIIS KUIDAS MARSRUUDID MEIL OLID getid ja postid, nuud tegime routes neile
