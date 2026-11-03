@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Karl Marcus Männa, veebiprogrammeerimine</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f1f5fb;
+            color: #1b2940;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #1765c1;
+        }
+
+        .header {
+            background: #10213d;
+            color: white;
+        }
+
+        .header-content {
+            max-width: 1120px;
+            margin: auto;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        .menu {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .menu a {
+            color: #eaf3ff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 9px;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #244c7b;
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 36px));
+            margin: 30px auto;
+        }
+
+        .intro {
+            background: linear-gradient(120deg, #173b69, #245c96);
+            color: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(22, 54, 96, 0.12);
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: #b9defe;
+            font-weight: bold;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .intro h1 {
+            margin: 0 0 10px;
+            font-size: clamp(27px, 4vw, 40px);
+            line-height: 1.2;
+        }
+
+        .intro p {
+            max-width: 760px;
+            margin: 8px 0;
+        }
+
+        .intro a {
+            color: white;
+            font-weight: bold;
+        }
+
+        .banner {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin-top: 24px;
+            border-radius: 10px;
+        }
+
+        .section-title {
+            font-size: 25px;
+            margin: 34px 0 16px;
+        }
+
+        .photos {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2eaf4;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(22, 54, 96, 0.06);
+        }
+
+        .card h3 {
+            margin: 0 0 12px;
+            font-size: 19px;
+        }
+
+        .photo {
+            display: block;
+            width: 100%;
+            height: 310px;
+            border-radius: 11px;
+            background: #edf2f8;
+            object-fit: contain;
+        }
+
+        .empty-photo {
+            display: flex;
+            min-height: 310px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 11px;
+            background: #edf2f8;
+            color: #576985;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .empty-photo span {
+            font-size: 40px;
+        }
+
+        .description {
+            margin: 12px 0 0;
+            color: #607089;
+            font-size: 14px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .detail-label {
+            display: block;
+            color: #63758f;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .link-card {
+            display: block;
+            padding: 15px 18px;
+            background: white;
+            border: 1px solid #e2eaf4;
+            border-radius: 12px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-card:hover {
+            background: #e7f1ff;
+        }
+
+        .footer {
+            text-align: center;
+            color: #68798e;
+            padding: 20px 12px 40px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .header-content {
+                padding: 16px 18px;
+            }
+
+            .intro {
+                padding: 22px;
+            }
+
+            .photos,
+            .details,
+            .links {
+                grid-template-columns: 1fr;
+            }
+
+            .photo,
+            .empty-photo {
+                height: auto;
+                min-height: 240px;
+                max-height: 420px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Karl Marcuse veeb</div>
+            <nav class="menu" aria-label="Peamenüü">
+                <a class="active" href="/">Avaleht</a>
+                <a href="/eestifilm">Eesti film</a>
+                <a href="/gallery">Fotogalerii</a>
+                <a href="/galleryphotoupload">Laadi foto üles</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="intro">
+            <p class="eyebrow">Tallinna Ülikool · veebiprogrammeerimine 2026</p>
+            <h1>Karl Marcus Männa veebileht</h1>
+            <p>
+                See leht on loodud veebiprogrammeerimise kursusel
+                <a href="https://www.tlu.ee">Tallinna Ülikoolis</a>
+                ning ei sisalda tõsiseltvõetavat sisu!
+            </p>
+            <p>Esialgu tutvusime lihtsalt HTML-keelega, nüüd õpime veebilehti programmeerima.</p>
+            <img class="banner" src="/pic/veebiprogrammeerimine_2026_AA.png"
+                 alt="Veebiprogrammeerimine 2026 bänner">
+        </section>
+
+        <h2 class="section-title">Fotod</h2>
+        <section class="photos" aria-label="Avalehe fotod">
+            <article class="card">
+                <h3>Luna</h3>
+                <img class="photo" src="/pic/luna.jpg" alt="Luna">
+                <p class="description">Minu veebilehe esimene foto.</p>
+            </article>
+
+            <article class="card">
+                <h3>Uusim avalik foto</h3>
+                <% if (latestPhoto) { %>
+                    <img class="photo"
+                         src="/gallery/normal/<%= latestPhoto.filename %>"
+                         alt="<%= latestPhoto.alttext || 'Uusim avalik foto' %>">
+                    <p class="description">Viimati galeriisse lisatud avalik foto.</p>
+                <% } else { %>
+                    <div class="empty-photo">
+                        <span aria-hidden="true">📷</span>
+                        <p>Avalikke fotosid veel ei ole.</p>
+                    </div>
+                <% } %>
+            </article>
+        </section>
+
+        <h2 class="section-title">Tänane päev</h2>
+        <section class="details" aria-label="Kuupäev ja kellaaeg">
+            <div class="card">
+                <span class="detail-label">Nädalapäev</span>
+                <span class="detail-value"><%= day %></span>
+            </div>
+            <div class="card">
+                <span class="detail-label">Kuupäev</span>
+                <span class="detail-value"><%= date %></span>
+            </div>
+            <div class="card">
+                <span class="detail-label">Kellaaeg lehe avamisel</span>
+                <span class="detail-value"><%= time %></span>
+            </div>
+        </section>
+
+        <h2 class="section-title">Avasta teisi lehti</h2>
+        <section class="links" aria-label="Teised lehed">
+            <a class="link-card" href="/vanasona">Vanasõna</a>
+            <a class="link-card" href="/miks-tlu">Miks tulin TLÜ-sse õppima?</a>
+            <a class="link-card" href="/regvisit">Külastuse registreerimine</a>
+            <a class="link-card" href="/eestifilm">Eesti film</a>
+            <a class="link-card" href="/galleryphotoupload">Fotode üleslaadimine galeriisse</a>
+            <a class="link-card" href="/gallery">Fotogalerii</a>
+        </section>
+    </main>
+
+    <footer class="footer">
+        Karl Marcus Männa · Tallinna Ülikool · 2026
+    </footer>
+
+</body>
+</html>

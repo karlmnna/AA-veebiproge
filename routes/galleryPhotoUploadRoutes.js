@@ -4,7 +4,7 @@ const multer = require('multer');
 const router = express.Router();
 
 //seadistame multer vahevara faile uleslaadima kindlasse kataloogi
-const upload = multer({dest: './public/gallery/orig/'});
+const upload = multer({dest: process.env.UPLOAD_ORIGINAL_PATH});
 //saab maarata ka lubatud failityype, failimahtu ja  muud sellist
 
 //kasutatavad controllerid

@@ -18,13 +18,48 @@ app.use(express.static('public'));
 //hakkame paringuid parsima
 app.use (bodyparser.urlencoded({extended: true}));
 
-app.get('/', (req, res)=>{
-	//res.send('Express.js veeb käivitus!');
-	const day = dateTimeET.weekDayET();
-	const date = dateTimeET.dateET();
-	const time = dateTimeET.timeET();
-	res.render('index', {day: day, date: date, time: time});
+
+app.get('/', async (req, res)=>{
+    const day = dateTimeET.weekDayET();
+    const date = dateTimeET.dateET();
+    const time = dateTimeET.timeET();
+
+    let conn;
+    let latestPhoto = null;
+
+    try {
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+
+        let sqlReq = 'SELECT filename, alttext FROM galleryphotos WHERE id=(SELECT MAX(id) FROM galleryphotos WHERE privacy=? AND deleted IS NULL)';
+
+        const [sqlRes] = await conn.execute(sqlReq, [3]);
+
+        if (sqlRes.length > 0) {
+            latestPhoto = sqlRes[0];
+        }
+    }
+    catch (err) {
+        console.log('Foto lugemisel tekkis viga: ' + err);
+    }
+    finally {
+        if (conn) {
+            await conn.end();
+        }
+    }
+
+    res.render('index', {
+        day: day,
+        date: date,
+        time: time,
+        latestPhoto: latestPhoto
+    });
 });
+
 
 app.get('/vanasona', async (req, res)=>{
 	try {
@@ -52,6 +87,8 @@ app.use('/eestifilm', eestifilmRouter);
 const galleryPhotoUploadRouter = require('./routes/galleryPhotoUploadRoutes');
 app.use('/galleryphotoupload', galleryPhotoUploadRouter);
 
+const galleryRouter = require("./routes/galleryRoutes");
+app.use("/gallery", galleryRouter);
 
 
 

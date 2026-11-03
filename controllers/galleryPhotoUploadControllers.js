@@ -25,8 +25,23 @@ const galleryPhotoUploadPost = async (req, res) => {
 		const fileName = 'vp_' + Date.now() + '.jpg';
 		await fs.rename(req.file.path, req.file.destination + fileName);
 		//teeme v2ixema veebis6braliku pici see v6ix minna normal kataloogi
-		await sharp(req.file.destination + fileName).resize(800, 500).jpeg({quality: 90}).toFile('./public/gallery/normal/' + fileName);
-		await sharp(req.file.destination + fileName).resize(100, 100).jpeg({quality: 90}).toFile('./public/gallery/thumbs/' + fileName);
+		
+		const watermark = await sharp('./public/pic/veepiisk.png')
+			.resize({width: 120})
+			.png()
+			.toBuffer();
+
+		await sharp(req.file.destination + fileName)
+			.resize(800, 500)
+			.composite([
+				{
+					input: watermark,
+					gravity: 'southeast'
+				}
+			])
+			.jpeg({quality: 90})
+			.toFile(process.env.UPLOAD_RESIZED_PATH + fileName);
+		await sharp(req.file.destination + fileName).resize(100, 100).jpeg({quality: 90}).toFile(process.env.UPLOAD_THUMBNAIL_PATH + fileName);
 		//kanname pildiinfo andmebaasi
 		conn = await mysql.createConnection({
 			host: process.env.DB_HOST,

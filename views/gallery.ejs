@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Fotogalerii</title>
+</head>
+<body>
+
+    <h1>Fotogalerii</h1>
+    <p><a href="/">Tagasi avalehele</a></p>
+
+    <% if (photoList.length > 0) { %>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+            <% for (let photo of photoList) { %>
+                <div>
+                    <a href="/gallery/normal/<%= photo.filename %>" target="_blank">
+                        <img src="/gallery/thumbs/<%= photo.filename %>"
+                             alt="<%= photo.alttext || 'Galerii foto' %>"
+                             width="150">
+                    </a>
+                </div>
+            <% } %>
+
+        </div>
+    <% } else { %>
+        <p>Galeriis ei ole veel fotosid.</p>
+    <% } %>
+
+</body>
+</html>
