@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html lang="et">
 <head>
-    <meta charset="utf-8">
-    <title>Fotogalerii</title>
+	<meta charset="utf-8">
+	<title>Karl Marcus Männa, veebiprogrammeerimine</title>
+	<link rel="styleSheet" href="/styles/gallery.css">
+	<script src="/script/gallery.js" defer></script>
 </head>
 <body>
-
-    <h1>Fotogalerii</h1>
-    <p><a href="/">Tagasi avalehele</a></p>
-
-    <% if (photoList.length > 0) { %>
-        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-
-            <% for (let photo of photoList) { %>
-                <div>
-                    <a href="/gallery/normal/<%= photo.filename %>" target="_blank">
-                        <img src="/gallery/thumbs/<%= photo.filename %>"
-                             alt="<%= photo.alttext || 'Galerii foto' %>"
-                             width="150">
-                    </a>
-                </div>
-            <% } %>
-
-        </div>
-    <% } else { %>
-        <p>Galeriis ei ole veel fotosid.</p>
-    <% } %>
-
+	<img src="../pic/veebiprogrammeerimine_2026_AA.png" alt="banner">
+	<h1>Fotogalerii</h1>
+	<ul>
+		<li><a href="/home">Avalehele</a></li>
+		<li><a href="/logout">Logi välja!</a></li>
+	</ul>
+	<hr>
+	<!--Dialoogiaken normaalsuuruse fotode naitamiseks-->
+	<dialog id="modal" class="modalarea">
+		<span id="modalClose" class="modalclose">&times;</span>
+		<div class="modalhorizontal">
+			<div class="modalvertical">
+				<p id="modalCaption"></p>
+				<img id="modalImage" src="../pic/empty.png" alt="galeriipilt">
+			</div>
+		</div>
+	</dialog>
+	
+	<div id="gallery" class="gallery">
+		<% galleryData.forEach(function(image){ %>
+		  <img src="<%=imagehref%><%=image.src%>" alt="<%=image.alt%>" data-id="<%= image.id%>" data-filename="<%=image.src%>" class="thumbs">
+		<% }); %>
+	</div>
 </body>
 </html>

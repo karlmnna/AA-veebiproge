@@ -50,7 +50,7 @@ const galleryPhotoUploadPost = async (req, res) => {
 			database: process.env.DB_DATABASE
 		});
 		const sqlReq = 'INSERT INTO galleryphotos (filename, origname, alttext, privacy, userid) VALUES (?,?,?,?,?)';
-		const userId = 1; // ajutine kuni teeme kasutajakontod ja sisselogimise
+		const userId = req.session.userId;
 		const [result] = await conn.execute(sqlReq, [fileName, req.file.originalname, req.body.altInput, req.body.privacyInput, userId]);
 		res.render('galleryphotoupload');
 	}

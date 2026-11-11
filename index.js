@@ -3,14 +3,39 @@ const dateTimeET = require('./src/dateTimeET.js');
 const fs = require('fs').promises;
 const bodyparser = require('body-parser');
 const mysql = require('mysql2/promise');
+//sessiooni moodul
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+//sisselogimise kontrolli vahevara
+const checkLogin = require('./src/checkLogin');
 //moodul keskkonnamuutujate lugemiseks
 require('dotenv').config();
+
 
 const textRef = 'public/txt/vanasonad.txt';
 const regTextRef = 'public/txt/visits.txt';
 
 //käivitan express() funktsiooni ja tähistan töötava asja nimega "app"
 const app = express();
+//määrame sessiooni alguse
+
+//esimene variant kasutas default memorystorei ja sailitas vaid uhe sesiooni korraga
+//app.use(session({secret: process.env.SES_SECRET, saveUninitialized: false, resave: true}));
+const sessionStore = new MySQLStore({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        });
+app.use(session({
+	secret: process.env.SES_SECRET,
+	store: sessionStore,
+	saveUninitialized: false,
+	resave: false,
+	cookie: {
+		maxAge: 1000 * 60 * 60 * 1 //sessioon aegub tunniajaga
+	}
+}));
 //määrame veebilehe mallide järgi renderdamise mootori
 app.set('view engine', 'ejs');
 //muudan "public" veebiserveri kättesaadavax
@@ -60,11 +85,13 @@ app.get('/', async (req, res)=>{
     });
 });
 
-app.get('/home', (req, res) => {
+app.get('/home', checkLogin.isLogin, (req, res) => {
 	res.render('home');
 });
 
 app.get('/logout', (req, res) => {
+	//hävitame sessiooni
+	req.session.destroy();
 	res.redirect('/');
 });
 

@@ -1,8 +1,12 @@
+
 const mysql = require("mysql2/promise");
 
+//@desc Photo gallery
+//@route GET /gallery
+//@access private
 const gallery = async (req, res) => {
     let conn;
-    let photoList = [];
+    let galleryData = [];
 
     try {
         conn = await mysql.createConnection({
@@ -12,10 +16,23 @@ const gallery = async (req, res) => {
             database: process.env.DB_DATABASE
         });
 
-        let sqlReq = "SELECT filename, alttext FROM galleryphotos WHERE privacy >= ? AND deleted IS NULL ORDER BY id DESC";
+        let sqlReq = "SELECT id, filename, alttext FROM galleryphotos WHERE privacy >= ? AND deleted IS NULL ORDER BY id DESC";
         const [sqlRes] = await conn.execute(sqlReq, [2]);
 
-        photoList = sqlRes;
+        for (let i = 0; i < sqlRes.length; i++) {
+            let altText = "Galeriipilt";
+
+            if (sqlRes[i].alttext) {
+                altText = sqlRes[i].alttext;
+            }
+
+            galleryData.push({
+                id: sqlRes[i].id,
+                src: sqlRes[i].filename,
+                alt: altText
+            });
+        }
+
     } catch (err) {
         console.log("Galerii lugemisel tekkis viga: " + err);
     } finally {
@@ -24,7 +41,10 @@ const gallery = async (req, res) => {
         }
     }
 
-    res.render("gallery", { photoList: photoList });
+    res.render("gallery", {
+        galleryData: galleryData,
+        imagehref: process.env.GALLERY_THUMBNAIL
+    });
 };
 
 module.exports = { gallery };
